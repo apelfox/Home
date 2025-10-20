@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>হোম পেজ</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary-color: #0088cc;
+            --secondary-color: #f0f0f0;
+            --text-color: #333;
+            --card-bg: #fff;
+            --header-bg: #fff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #2ea6ff;
+            --secondary-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --card-bg: #2d2d2d;
+            --header-bg: #1e1e1e;
+            --shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* হেডার স্টাইল */
+        header {
+            background-color: var(--header-bg);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-id {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .theme-icon {
+            font-size: 20px;
+        }
+
+        /* স্লাইডার স্টাইল */
+        .slider-section {
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .slider-nav {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .slider-dot.active {
+            background-color: white;
+        }
+
+        /* ব্যালেন্স সেকশন স্টাইল */
+        .balance-section {
+            margin: 25px 0;
+        }
+
+        .balance-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .balance-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .balance-amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .all-wallet-link {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .all-wallet-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ইউজার রেটিং সেকশন স্টাইল */
+        .rating-section {
+            margin: 25px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .rating-frame {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            height: 400px;
+        }
+
+        .rating-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* লোডিং স্টেট */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 18px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* রেস্পন্সিভ ডিজাইন */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .slide img {
+                height: 200px;
+            }
+            
+            .balance-amount {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- হেডার সেকশন -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="user-profile">
+                    <img id="profile-pic" src="" alt="Profile Picture" class="profile-pic">
+                    <div class="user-info">
+                        <div id="user-name" class="user-name">লোড হচ্ছে...</div>
+                        <div id="user-id" class="user-id">ID: লোড হচ্ছে...</div>
+                    </div>
+                </div>
+                <div class="theme-toggle" id="theme-toggle">
+                    <span class="theme-icon">🌙</span>
+                    <span id="theme-text">ডার্ক মোড</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- স্লাইডার সেকশন -->
+        <section class="slider-section">
+            <div class="slider" id="slider">
+                <!-- স্লাইডার কন্টেন্ট ডাইনামিকভাবে লোড হবে -->
+            </div>
+            <div class="slider-nav" id="slider-nav">
+                <!-- স্লাইডার ডটস ডাইনামিকভাবে লোড হবে -->
+            </div>
+        </section>
+
+        <!-- ব্যালেন্স সেকশন -->
+        <section class="balance-section">
+            <div class="balance-card">
+                <div class="balance-title">Main Balance:</div>
+                <div id="balance-amount" class="balance-amount">৳ 0.00</div>
+                <a href="#" id="all-wallet-link" class="all-wallet-link">All Wallet →</a>
+            </div>
+        </section>
+
+        <!-- ইউজার রেটিং সেকশন -->
+        <section class="rating-section">
+            <h2 class="section-title">ইউজার রেটিং</h2>
+            <div class="rating-frame">
+                <iframe id="rating-frame" src="" frameborder="0"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Firebase কনফিগারেশন
+        const firebaseConfig = {
+  apiKey: "AIzaSyDan31qsrOecKIs6wLUjWfWafIzq8oXWpY",
+  authDomain: "apelyfox-164c1.firebaseapp.com",
+  databaseURL: "https://apelyfox-164c1-default-rtdb.firebaseio.com",
+  projectId: "apelyfox-164c1",
+  storageBucket: "apelyfox-164c1.firebasestorage.app",
+  messagingSenderId: "1081216277329",
+  appId: "1:1081216277329:web:bfe0c3e9b4769d92e51170"
+};
+
+        // Firebase ইনিশিয়ালাইজ
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Telegram Web App ইনিশিয়ালাইজ
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Web App সম্পূর্ণ স্ক্রিনে দেখাবে
+        const user = tg.initDataUnsafe.user;
+
+        // DOM এলিমেন্টস
+        const profilePic = document.getElementById('profile-pic');
+        const userName = document.getElementById('user-name');
+        const userId = document.getElementById('user-id');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeText = document.getElementById('theme-text');
+        const slider = document.getElementById('slider');
+        const sliderNav = document.getElementById('slider-nav');
+        const balanceAmount = document.getElementById('balance-amount');
+        const allWalletLink = document.getElementById('all-wallet-link');
+        const ratingFrame = document.getElementById('rating-frame');
+
+        // থিম টগল ফাংশন
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                themeText.textContent = 'ডার্ক মোড';
+                themeToggle.querySelector('.theme-icon').textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeText.textContent = 'লাইট মোড';
+                themeToggle.querySelector('.theme-icon').textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // ইউজার প্রোফাইল লোড
+        function loadUserProfile() {
+            if (user) {
+                const photoUrl = user.photo_url || 'default-avatar.png';
+                const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User';
+                const id = user.id || 'N/A';
+                
+                profilePic.src = photoUrl;
+                userName.textContent = fullName;
+                userId.textContent = `ID: ${id}`;
+                
+                // All Wallet লিঙ্কে Telegram ডাটা যোগ করা
+                const userData = encodeURIComponent(JSON.stringify({
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    language_code: user.language_code
+                }));
+                allWalletLink.href = `wallet.html?user=${userData}`;
+            } else {
+                userName.textContent = 'ইউজার লোড করতে সমস্যা';
+                userId.textContent = 'ID: পাওয়া যায়নি';
+            }
+        }
+
+        // স্লাইডার লোড
+        function loadSlider() {
+            // Firebase থেকে স্লাইডার ডাটা লোড
+            db.collection('Admin').doc('homePage').collection('slider').orderBy('order')
+                .get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        slider.innerHTML = '<div class="loading"><div class="spinner"></div>স্লাইডার লোড হচ্ছে...</div>';
+                        return;
+                    }
+                    
+                    slider.innerHTML = '';
+                    sliderNav.innerHTML = '';
+                    
+                    let currentSlide = 0;
+                    const slides = [];
+                    
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const slide = document.createElement('div');
+                        slide.className = 'slide';
+                        
+                        const link = document.createElement('a');
+                        link.href = data.targetLink || '#';
+                        link.target = '_blank';
+                        
+                        const img = document.createElement('img');
+                        img.src = data.imageUrl || 'placeholder.jpg';
+                        img.alt = data.title || 'Slide';
+                        
+                        link.appendChild(img);
+                        slide.appendChild(link);
+                        slider.appendChild(slide);
+                        
+                        // স্লাইডার ডট তৈরি
+                        const dot = document.createElement('div');
+                        dot.className = 'slider-dot';
+                        if (slides.length === 0) dot.classList.add('active');
+                        dot.addEventListener('click', () => {
+                            goToSlide(slides.length);
+                        });
+                        sliderNav.appendChild(dot);
+                        
+                        slides.push(slide);
+                    });
+                    
+                    // অটো স্লাইড ফাংশন
+                    function nextSlide() {
+                        currentSlide = (currentSlide + 1) % slides.length;
+                        goToSlide(currentSlide);
+                    }
+                    
+                    function goToSlide(index) {
+                        currentSlide = index;
+                        slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+                        
+                        // ডট আপডেট
+                        const dots = document.querySelectorAll('.slider-dot');
+                        dots.forEach((dot, i) => {
+                            if (i === currentSlide) {
+                                dot.classList.add('active');
+                            } else {
+                                dot.classList.remove('active');
+                            }
+                        });
+                    }
+                    
+                    // প্রতি 5 সেকেন্ডে স্লাইড পরিবর্তন
+                    setInterval(nextSlide, 5000);
+                    
+                    // ডট ক্লিক ইভেন্ট
+                    const dots = document.querySelectorAll('.slider-dot');
+                    dots.forEach((dot, i) => {
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                    });
+                })
+                .catch((error) => {
+                    console.error('স্লাইডার লোড করতে সমস্যা:', error);
+                    slider.innerHTML = '<div class="loading">স্লাইডার লোড করতে সমস্যা হয়েছে</div>';
+                });
+        }
+
+        // ব্যালেন্স লোড
+        function loadBalance() {
+            if (!user || !user.id) {
+                balanceAmount.textContent = '৳ 0.00';
+                return;
+            }
+            
+            // Firebase থেকে ইউজার ব্যালেন্স লোড
+            db.collection('userBalance').doc(user.id.toString())
+                .get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const balance = data.mainBalance || 0;
+                        balanceAmount.textContent = `৳ ${balance.toLocaleString()}`;
+                    } else {
+                        balanceAmount.textContent = '৳ 0.00';
+                    }
+                })
+                .catch((error) => {
+                    console.error('ব্যালেন্স লোড করতে সমস্যা:', error);
+                    balanceAmount.textContent = '৳ 0.00';
+                });
+        }
+
+        // রেটিং ফ্রেম লোড
+        function loadRatingFrame() {
+            if (user) {
+                const userData = encodeURIComponent(JSON.stringify({
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    language_code: user.language_code
+                }));
+                ratingFrame.src = `rating.html?user=${userData}`;
+            } else {
+                ratingFrame.src = 'rating.html';
+            }
+        }
+
+        // পেজ লোড হওয়ার পর সব ফাংশন কল
+        document.addEventListener('DOMContentLoaded', function() {
+            // থিম সেটআপ
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeText.textContent = 'লাইট মোড';
+                themeToggle.querySelector('.theme-icon').textContent = '☀️';
+            }
+            
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // ইউজার প্রোফাইল লোড
+            loadUserProfile();
+            
+            // স্লাইডার লোড
+            loadSlider();
+            
+            // ব্যালেন্স লোড
+            loadBalance();
+            
+            // রেটিং ফ্রেম লোড
+            loadRatingFrame();
+        });
+    </script>
+</body>
+</html>
