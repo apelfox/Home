@@ -112,16 +112,24 @@
             height: 350px;
         }
 
+        .slider-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
         .slider {
             display: flex;
             transition: transform 0.5s ease;
             height: 100%;
+            width: 100%;
         }
 
         .slide {
             min-width: 100%;
             position: relative;
             height: 100%;
+            flex-shrink: 0;
         }
 
         .slide img {
@@ -219,7 +227,6 @@
             padding: 30px;
             box-shadow: var(--shadow);
             text-align: center;
-            position: relative;
         }
 
         .balance-title {
@@ -236,24 +243,28 @@
         }
 
         .balance-actions {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .withdraw-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s;
             text-decoration: none;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .withdraw-btn:hover {
@@ -266,11 +277,13 @@
             font-weight: 500;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 5px;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border: 1px solid var(--primary-color);
             border-radius: 8px;
             transition: all 0.3s;
+            text-align: center;
         }
 
         .all-wallet-link:hover {
@@ -300,6 +313,7 @@
             width: 100%;
             border: none;
             display: block;
+            min-height: 500px;
         }
 
         /* লোডিং স্টেট */
@@ -309,6 +323,8 @@
             align-items: center;
             height: 200px;
             font-size: 18px;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .spinner {
@@ -318,7 +334,6 @@
             border-left-color: var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-right: 10px;
         }
 
         @keyframes spin {
@@ -341,14 +356,25 @@
             }
             
             .balance-actions {
-                flex-direction: column;
-                gap: 15px;
+                grid-template-columns: 1fr;
+                gap: 12px;
+                max-width: 300px;
             }
             
-            .withdraw-btn, .all-wallet-link {
-                width: 100%;
-                text-align: center;
-                justify-content: center;
+            .slider-arrow {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .balance-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .slider-section {
+                height: 200px;
             }
         }
     </style>
@@ -376,13 +402,18 @@
     <main class="container">
         <!-- আপডেটেড স্লাইডার সেকশন -->
         <section class="slider-section">
-            <div class="slider-arrow prev" id="prev-slide">❮</div>
-            <div class="slider" id="slider">
-                <!-- স্লাইডার কন্টেন্ট ডাইনামিকভাবে লোড হবে -->
-            </div>
-            <div class="slider-arrow next" id="next-slide">❯</div>
-            <div class="slider-nav" id="slider-nav">
-                <!-- স্লাইডার ডটস ডাইনামিকভাবে লোড হবে -->
+            <div class="slider-container">
+                <div class="slider-arrow prev" id="prev-slide">❮</div>
+                <div class="slider" id="slider">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div>স্লাইডার লোড হচ্ছে...</div>
+                    </div>
+                </div>
+                <div class="slider-arrow next" id="next-slide">❯</div>
+                <div class="slider-nav" id="slider-nav">
+                    <!-- স্লাইডার ডটস ডাইনামিকভাবে লোড হবে -->
+                </div>
             </div>
         </section>
 
@@ -408,7 +439,7 @@
     </main>
 
     <script>
-        // Firebase কনফিগারেশন
+        // Firebase কনফিগারেশন - আপনার প্রকৃত কনফিগারেশন ব্যবহার করুন
         const firebaseConfig = {
   apiKey: "AIzaSyDan31qsrOecKIs6wLUjWfWafIzq8oXWpY",
   authDomain: "apelyfox-164c1.firebaseapp.com",
@@ -425,7 +456,7 @@
 
         // Telegram Web App ইনিশিয়ালাইজ
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Web App সম্পূর্ণ স্ক্রিনে দেখাবে
+        tg.expand();
         const user = tg.initDataUnsafe.user;
 
         // DOM এলিমেন্টস
@@ -442,6 +473,11 @@
         const withdrawBtn = document.getElementById('withdraw-btn');
         const allWalletLink = document.getElementById('all-wallet-link');
         const ratingFrame = document.getElementById('rating-frame');
+
+        // গ্লোবাল ভেরিয়েবলস
+        let currentSlideIndex = 0;
+        let slideInterval;
+        let totalSlides = 0;
 
         // থিম টগল ফাংশন
         function toggleTheme() {
@@ -462,7 +498,7 @@
         // ইউজার প্রোফাইল লোড
         function loadUserProfile() {
             if (user) {
-                const photoUrl = user.photo_url || 'default-avatar.png';
+                const photoUrl = user.photo_url || 'https://via.placeholder.com/40/0088cc/ffffff?text=USER';
                 const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User';
                 const id = user.id || 'N/A';
                 
@@ -492,18 +528,25 @@
         async function createDefaultSliderData() {
             const defaultSlides = [
                 {
-                    imageUrl: 'https://via.placeholder.com/800x350/0088cc/ffffff?text=Welcome+Slide+1',
+                    imageUrl: 'https://via.placeholder.com/800x350/0088cc/ffffff?text=স্বাগতম+স্লাইড+১',
                     targetLink: '#',
                     title: 'স্বাগতম স্লাইড ১',
                     description: 'এটি আমাদের ডিফল্ট স্লাইড',
                     order: 1
                 },
                 {
-                    imageUrl: 'https://via.placeholder.com/800x350/00cc88/ffffff?text=Welcome+Slide+2',
+                    imageUrl: 'https://via.placeholder.com/800x350/00cc88/ffffff?text=স্বাগতম+স্লাইড+২',
                     targetLink: '#',
                     title: 'স্বাগতম স্লাইড ২',
                     description: 'এটি আমাদের ডিফল্ট স্লাইড',
                     order: 2
+                },
+                {
+                    imageUrl: 'https://via.placeholder.com/800x350/cc0088/ffffff?text=স্বাগতম+স্লাইড+৩',
+                    targetLink: '#',
+                    title: 'স্বাগতম স্লাইড ৩',
+                    description: 'এটি আমাদের ডিফল্ট স্লাইড',
+                    order: 3
                 }
             ];
 
@@ -512,32 +555,45 @@
                     await db.collection('Admin').doc('homePage').collection('slider').add(slide);
                 }
                 console.log('ডিফল্ট স্লাইডার ডাটা তৈরি করা হয়েছে');
+                return true;
             } catch (error) {
                 console.error('ডিফল্ট স্লাইডার তৈরি করতে সমস্যা:', error);
+                return false;
             }
         }
 
-        // স্লাইডার লোড
+        // স্লাইডার লোড এবং ডিসপ্লে
         async function loadSlider() {
             try {
-                const querySnapshot = await db.collection('Admin').doc('homePage').collection('slider').orderBy('order').get();
+                console.log('স্লাইডার ডাটা লোড হচ্ছে...');
+                
+                const querySnapshot = await db.collection('Admin').doc('homePage').collection('slider')
+                    .orderBy('order')
+                    .get();
                 
                 if (querySnapshot.empty) {
-                    // যদি কোনো স্লাইড না থাকে, ডিফল্ট স্লাইড তৈরি করুন
-                    await createDefaultSliderData();
-                    // নতুন করে ডাটা লোড করুন
-                    await loadSlider();
+                    console.log('কোনো স্লাইড পাওয়া যায়নি, ডিফল্ট স্লাইড তৈরি হচ্ছে...');
+                    const created = await createDefaultSliderData();
+                    if (created) {
+                        // নতুন করে ডাটা লোড করুন
+                        await loadSlider();
+                    }
                     return;
                 }
                 
+                console.log(`মোট ${querySnapshot.size}টি স্লাইড পাওয়া গেছে`);
+                
+                // স্লাইডার কন্টেন্ট ক্লিয়ার করুন
                 slider.innerHTML = '';
                 sliderNav.innerHTML = '';
                 
-                let currentSlide = 0;
                 const slides = [];
+                let slideIndex = 0;
                 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    console.log('স্লাইড ডাটা:', data);
+                    
                     const slide = document.createElement('div');
                     slide.className = 'slide';
                     
@@ -548,6 +604,9 @@
                     const img = document.createElement('img');
                     img.src = data.imageUrl || 'https://via.placeholder.com/800x350/cccccc/666666?text=No+Image';
                     img.alt = data.title || 'Slide';
+                    img.onerror = function() {
+                        this.src = 'https://via.placeholder.com/800x350/cccccc/666666?text=Image+Error';
+                    };
                     
                     link.appendChild(img);
                     
@@ -579,60 +638,120 @@
                     // স্লাইডার ডট তৈরি
                     const dot = document.createElement('div');
                     dot.className = 'slider-dot';
-                    if (slides.length === 0) dot.classList.add('active');
+                    dot.setAttribute('data-index', slideIndex);
+                    if (slideIndex === 0) {
+                        dot.classList.add('active');
+                    }
                     dot.addEventListener('click', () => {
-                        goToSlide(slides.length);
+                        goToSlide(slideIndex);
                     });
                     sliderNav.appendChild(dot);
                     
                     slides.push(slide);
+                    slideIndex++;
                 });
                 
-                // স্লাইড নেভিগেশন ফাংশন
-                function nextSlide() {
-                    currentSlide = (currentSlide + 1) % slides.length;
-                    goToSlide(currentSlide);
+                totalSlides = slides.length;
+                console.log(`মোট ${totalSlides}টি স্লাইড লোড করা হয়েছে`);
+                
+                if (totalSlides > 0) {
+                    // স্লাইডার ফাংশনালিটি ইনিশিয়ালাইজ করুন
+                    initSliderFunctionality();
+                } else {
+                    slider.innerHTML = '<div class="loading">কোনো স্লাইড পাওয়া যায়নি</div>';
                 }
-                
-                function prevSlideFunc() {
-                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-                    goToSlide(currentSlide);
-                }
-                
-                function goToSlide(index) {
-                    currentSlide = index;
-                    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                    
-                    // ডট আপডেট
-                    const dots = document.querySelectorAll('.slider-dot');
-                    dots.forEach((dot, i) => {
-                        if (i === currentSlide) {
-                            dot.classList.add('active');
-                        } else {
-                            dot.classList.remove('active');
-                        }
-                    });
-                }
-                
-                // ইভেন্ট লিসেনার যোগ করুন
-                nextSlide.addEventListener('click', nextSlide);
-                prevSlide.addEventListener('click', prevSlideFunc);
-                
-                // প্রতি 5 সেকেন্ডে স্লাইড পরিবর্তন
-                let slideInterval = setInterval(nextSlide, 5000);
-                
-                // যখন ইউজার ইন্টার্যাক্ট করে, ইন্টারভাল রিসেট করুন
-                slider.addEventListener('mouseenter', () => {
-                    clearInterval(slideInterval);
-                });
-                
-                slider.addEventListener('mouseleave', () => {
-                    slideInterval = setInterval(nextSlide, 5000);
-                });
                 
             } catch (error) {
                 console.error('স্লাইডার লোড করতে সমস্যা:', error);
                 slider.innerHTML = '<div class="loading">স্লাইডার লোড করতে সমস্যা হয়েছে</div>';
+            }
+        }
+
+        // স্লাইডার ফাংশনালিটি ইনিশিয়ালাইজ
+        function initSliderFunctionality() {
+            // বর্তমান স্লাইড ইনডেক্স রিসেট করুন
+            currentSlideIndex = 0;
+            
+            // নেক্সট স্লাইড ফাংশন
+            function nextSlide() {
+                currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+                updateSlider();
+            }
+            
+            // প্রিভিয়াস স্লাইড ফাংশন
+            function prevSlideFunc() {
+                currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+                updateSlider();
+            }
+            
+            // নির্দিষ্ট স্লাইডে যাওয়ার ফাংশন
+            function goToSlide(index) {
+                currentSlideIndex = index;
+                updateSlider();
+            }
+            
+            // স্লাইডার আপডেট ফাংশন
+            function updateSlider() {
+                slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+                
+                // ডট আপডেট
+                const dots = document.querySelectorAll('.slider-dot');
+                dots.forEach((dot, i) => {
+                    if (i === currentSlideIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            // ইভেন্ট লিসেনার যোগ করুন
+            nextSlide.addEventListener('click', nextSlide);
+            prevSlide.addEventListener('click', prevSlideFunc);
+            
+            // অটোপ্লে সেটআপ
+            startAutoPlay();
+            
+            // যখন ইউজার ইন্টার্যাক্ট করে, অটোপ্লে থামান এবং রিস্টার্ট করুন
+            slider.addEventListener('mouseenter', stopAutoPlay);
+            slider.addEventListener('mouseleave', startAutoPlay);
+            
+            // টাচ ইভেন্টস (মোবাইলের জন্য)
+            let startX = 0;
+            let endX = 0;
+            
+            slider.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                stopAutoPlay();
+            });
+            
+            slider.addEventListener('touchend', (e) => {
+                endX = e.changedTouches[0].clientX;
+                handleSwipe();
+                startAutoPlay();
+            });
+            
+            function handleSwipe() {
+                const diff = startX - endX;
+                if (Math.abs(diff) > 50) { // minimum swipe distance
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlideFunc();
+                    }
+                }
+            }
+            
+            // অটোপ্লে কন্ট্রোল ফাংশন
+            function startAutoPlay() {
+                stopAutoPlay();
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+            
+            function stopAutoPlay() {
+                if (slideInterval) {
+                    clearInterval(slideInterval);
+                }
             }
         }
 
@@ -654,11 +773,6 @@
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     console.log('নতুন ইউজার ব্যালেন্স তৈরি করা হয়েছে');
-                } else {
-                    // ব্যালেন্স আপডেট করার সময়স্ট্যাম্প আপডেট করুন
-                    await userBalanceRef.update({
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
                 }
             } catch (error) {
                 console.error('ইউজার ব্যালেন্স তৈরি/আপডেট করতে সমস্যা:', error);
@@ -703,20 +817,6 @@
                     language_code: user.language_code
                 }));
                 ratingFrame.src = `rating.html?user=${userData}`;
-                
-                // ফ্রেম লোড হওয়ার পর উচ্চতা সেট করুন
-                ratingFrame.onload = function() {
-                    try {
-                        // ফ্রেমের কন্টেন্ট উচ্চতা অনুযায়ী ফ্রেমের উচ্চতা সেট করুন
-                        const frameDocument = ratingFrame.contentDocument || ratingFrame.contentWindow.document;
-                        const frameHeight = frameDocument.documentElement.scrollHeight;
-                        ratingFrame.style.height = frameHeight + 'px';
-                    } catch (e) {
-                        // Cross-origin এরর এড়ানোর জন্য
-                        console.log('ফ্রেম উচ্চতা সেট করতে সমস্যা (CORS)');
-                        ratingFrame.style.height = '600px'; // ডিফল্ট উচ্চতা
-                    }
-                };
             } else {
                 ratingFrame.src = 'rating.html';
             }
