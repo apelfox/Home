@@ -102,30 +102,54 @@
             font-size: 20px;
         }
 
-        /* স্লাইডার স্টাইল */
+        /* আপডেটেড স্লাইডার স্টাইল */
         .slider-section {
             margin: 20px 0;
             position: relative;
             overflow: hidden;
-            border-radius: 10px;
+            border-radius: 15px;
             box-shadow: var(--shadow);
+            height: 350px;
         }
 
         .slider {
             display: flex;
             transition: transform 0.5s ease;
+            height: 100%;
         }
 
         .slide {
             min-width: 100%;
             position: relative;
+            height: 100%;
         }
 
         .slide img {
             width: 100%;
-            height: 300px;
+            height: 100%;
             object-fit: cover;
             display: block;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            padding: 20px;
+            color: white;
+        }
+
+        .slide-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .slide-description {
+            font-size: 14px;
+            opacity: 0.9;
         }
 
         .slider-nav {
@@ -136,63 +160,125 @@
             display: flex;
             justify-content: center;
             gap: 8px;
+            z-index: 10;
         }
 
         .slider-dot {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background-color: rgba(255,255,255,0.5);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            border: 2px solid transparent;
         }
 
         .slider-dot.active {
             background-color: white;
+            transform: scale(1.2);
         }
 
-        /* ব্যালেন্স সেকশন স্টাইল */
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .slider-arrow:hover {
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .slider-arrow.prev {
+            left: 15px;
+        }
+
+        .slider-arrow.next {
+            right: 15px;
+        }
+
+        /* আপডেটেড ব্যালেন্স সেকশন স্টাইল */
         .balance-section {
             margin: 25px 0;
         }
 
         .balance-card {
             background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 15px;
+            padding: 30px;
             box-shadow: var(--shadow);
+            text-align: center;
             position: relative;
         }
 
         .balance-title {
-            font-size: 16px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            margin-bottom: 15px;
             opacity: 0.8;
         }
 
         .balance-amount {
-            font-size: 28px;
+            font-size: 36px;
             font-weight: bold;
             color: var(--primary-color);
+            margin-bottom: 25px;
+        }
+
+        .balance-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .withdraw-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .withdraw-btn:hover {
+            background-color: #0066a3;
         }
 
         .all-wallet-link {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 5px;
+            padding: 10px 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            transition: all 0.3s;
         }
 
         .all-wallet-link:hover {
-            text-decoration: underline;
+            background-color: var(--primary-color);
+            color: white;
         }
 
-        /* ইউজার রেটিং সেকশন স্টাইল */
+        /* আপডেটেড ইউজার রেটিং সেকশন স্টাইল */
         .rating-section {
             margin: 25px 0;
         }
@@ -203,18 +289,17 @@
             font-weight: 600;
         }
 
-        .rating-frame {
+        .rating-container {
             background-color: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
             box-shadow: var(--shadow);
-            height: 400px;
         }
 
-        .rating-frame iframe {
+        .rating-frame {
             width: 100%;
-            height: 100%;
             border: none;
+            display: block;
         }
 
         /* লোডিং স্টেট */
@@ -247,12 +332,23 @@
                 gap: 15px;
             }
             
-            .slide img {
-                height: 200px;
+            .slider-section {
+                height: 250px;
             }
             
             .balance-amount {
-                font-size: 24px;
+                font-size: 28px;
+            }
+            
+            .balance-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .withdraw-btn, .all-wallet-link {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
             }
         }
     </style>
@@ -278,30 +374,35 @@
     </header>
 
     <main class="container">
-        <!-- স্লাইডার সেকশন -->
+        <!-- আপডেটেড স্লাইডার সেকশন -->
         <section class="slider-section">
+            <div class="slider-arrow prev" id="prev-slide">❮</div>
             <div class="slider" id="slider">
                 <!-- স্লাইডার কন্টেন্ট ডাইনামিকভাবে লোড হবে -->
             </div>
+            <div class="slider-arrow next" id="next-slide">❯</div>
             <div class="slider-nav" id="slider-nav">
                 <!-- স্লাইডার ডটস ডাইনামিকভাবে লোড হবে -->
             </div>
         </section>
 
-        <!-- ব্যালেন্স সেকশন -->
+        <!-- আপডেটেড ব্যালেন্স সেকশন -->
         <section class="balance-section">
             <div class="balance-card">
                 <div class="balance-title">Main Balance:</div>
                 <div id="balance-amount" class="balance-amount">৳ 0.00</div>
-                <a href="#" id="all-wallet-link" class="all-wallet-link">All Wallet →</a>
+                <div class="balance-actions">
+                    <a href="#" id="withdraw-btn" class="withdraw-btn">Withdraw</a>
+                    <a href="#" id="all-wallet-link" class="all-wallet-link">All Wallet →</a>
+                </div>
             </div>
         </section>
 
-        <!-- ইউজার রেটিং সেকশন -->
+        <!-- আপডেটেড ইউজার রেটিং সেকশন -->
         <section class="rating-section">
             <h2 class="section-title">ইউজার রেটিং</h2>
-            <div class="rating-frame">
-                <iframe id="rating-frame" src="" frameborder="0"></iframe>
+            <div class="rating-container">
+                <iframe id="rating-frame" class="rating-frame" src="" frameborder="0"></iframe>
             </div>
         </section>
     </main>
@@ -335,7 +436,10 @@
         const themeText = document.getElementById('theme-text');
         const slider = document.getElementById('slider');
         const sliderNav = document.getElementById('slider-nav');
+        const prevSlide = document.getElementById('prev-slide');
+        const nextSlide = document.getElementById('next-slide');
         const balanceAmount = document.getElementById('balance-amount');
+        const withdrawBtn = document.getElementById('withdraw-btn');
         const allWalletLink = document.getElementById('all-wallet-link');
         const ratingFrame = document.getElementById('rating-frame');
 
@@ -366,7 +470,7 @@
                 userName.textContent = fullName;
                 userId.textContent = `ID: ${id}`;
                 
-                // All Wallet লিঙ্কে Telegram ডাটা যোগ করা
+                // URL প্যারামিটার তৈরি
                 const userData = encodeURIComponent(JSON.stringify({
                     id: user.id,
                     first_name: user.first_name,
@@ -374,6 +478,9 @@
                     username: user.username,
                     language_code: user.language_code
                 }));
+                
+                // লিঙ্কে Telegram ডাটা যোগ করা
+                withdrawBtn.href = `withdraw.html?user=${userData}`;
                 allWalletLink.href = `wallet.html?user=${userData}`;
             } else {
                 userName.textContent = 'ইউজার লোড করতে সমস্যা';
@@ -381,113 +488,208 @@
             }
         }
 
+        // ডিফল্ট স্লাইডার ডাটা তৈরি
+        async function createDefaultSliderData() {
+            const defaultSlides = [
+                {
+                    imageUrl: 'https://via.placeholder.com/800x350/0088cc/ffffff?text=Welcome+Slide+1',
+                    targetLink: '#',
+                    title: 'স্বাগতম স্লাইড ১',
+                    description: 'এটি আমাদের ডিফল্ট স্লাইড',
+                    order: 1
+                },
+                {
+                    imageUrl: 'https://via.placeholder.com/800x350/00cc88/ffffff?text=Welcome+Slide+2',
+                    targetLink: '#',
+                    title: 'স্বাগতম স্লাইড ২',
+                    description: 'এটি আমাদের ডিফল্ট স্লাইড',
+                    order: 2
+                }
+            ];
+
+            try {
+                for (const slide of defaultSlides) {
+                    await db.collection('Admin').doc('homePage').collection('slider').add(slide);
+                }
+                console.log('ডিফল্ট স্লাইডার ডাটা তৈরি করা হয়েছে');
+            } catch (error) {
+                console.error('ডিফল্ট স্লাইডার তৈরি করতে সমস্যা:', error);
+            }
+        }
+
         // স্লাইডার লোড
-        function loadSlider() {
-            // Firebase থেকে স্লাইডার ডাটা লোড
-            db.collection('Admin').doc('homePage').collection('slider').orderBy('order')
-                .get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        slider.innerHTML = '<div class="loading"><div class="spinner"></div>স্লাইডার লোড হচ্ছে...</div>';
-                        return;
+        async function loadSlider() {
+            try {
+                const querySnapshot = await db.collection('Admin').doc('homePage').collection('slider').orderBy('order').get();
+                
+                if (querySnapshot.empty) {
+                    // যদি কোনো স্লাইড না থাকে, ডিফল্ট স্লাইড তৈরি করুন
+                    await createDefaultSliderData();
+                    // নতুন করে ডাটা লোড করুন
+                    await loadSlider();
+                    return;
+                }
+                
+                slider.innerHTML = '';
+                sliderNav.innerHTML = '';
+                
+                let currentSlide = 0;
+                const slides = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const slide = document.createElement('div');
+                    slide.className = 'slide';
+                    
+                    const link = document.createElement('a');
+                    link.href = data.targetLink || '#';
+                    link.target = '_blank';
+                    
+                    const img = document.createElement('img');
+                    img.src = data.imageUrl || 'https://via.placeholder.com/800x350/cccccc/666666?text=No+Image';
+                    img.alt = data.title || 'Slide';
+                    
+                    link.appendChild(img);
+                    
+                    // ওভারলে যোগ করুন যদি টাইটেল বা ডেস্ক্রিপশন থাকে
+                    if (data.title || data.description) {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'slide-overlay';
+                        
+                        if (data.title) {
+                            const title = document.createElement('div');
+                            title.className = 'slide-title';
+                            title.textContent = data.title;
+                            overlay.appendChild(title);
+                        }
+                        
+                        if (data.description) {
+                            const desc = document.createElement('div');
+                            desc.className = 'slide-description';
+                            desc.textContent = data.description;
+                            overlay.appendChild(desc);
+                        }
+                        
+                        link.appendChild(overlay);
                     }
                     
-                    slider.innerHTML = '';
-                    sliderNav.innerHTML = '';
+                    slide.appendChild(link);
+                    slider.appendChild(slide);
                     
-                    let currentSlide = 0;
-                    const slides = [];
-                    
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const slide = document.createElement('div');
-                        slide.className = 'slide';
-                        
-                        const link = document.createElement('a');
-                        link.href = data.targetLink || '#';
-                        link.target = '_blank';
-                        
-                        const img = document.createElement('img');
-                        img.src = data.imageUrl || 'placeholder.jpg';
-                        img.alt = data.title || 'Slide';
-                        
-                        link.appendChild(img);
-                        slide.appendChild(link);
-                        slider.appendChild(slide);
-                        
-                        // স্লাইডার ডট তৈরি
-                        const dot = document.createElement('div');
-                        dot.className = 'slider-dot';
-                        if (slides.length === 0) dot.classList.add('active');
-                        dot.addEventListener('click', () => {
-                            goToSlide(slides.length);
-                        });
-                        sliderNav.appendChild(dot);
-                        
-                        slides.push(slide);
+                    // স্লাইডার ডট তৈরি
+                    const dot = document.createElement('div');
+                    dot.className = 'slider-dot';
+                    if (slides.length === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => {
+                        goToSlide(slides.length);
                     });
+                    sliderNav.appendChild(dot);
                     
-                    // অটো স্লাইড ফাংশন
-                    function nextSlide() {
-                        currentSlide = (currentSlide + 1) % slides.length;
-                        goToSlide(currentSlide);
-                    }
+                    slides.push(slide);
+                });
+                
+                // স্লাইড নেভিগেশন ফাংশন
+                function nextSlide() {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    goToSlide(currentSlide);
+                }
+                
+                function prevSlideFunc() {
+                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                    goToSlide(currentSlide);
+                }
+                
+                function goToSlide(index) {
+                    currentSlide = index;
+                    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
                     
-                    function goToSlide(index) {
-                        currentSlide = index;
-                        slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                        
-                        // ডট আপডেট
-                        const dots = document.querySelectorAll('.slider-dot');
-                        dots.forEach((dot, i) => {
-                            if (i === currentSlide) {
-                                dot.classList.add('active');
-                            } else {
-                                dot.classList.remove('active');
-                            }
-                        });
-                    }
-                    
-                    // প্রতি 5 সেকেন্ডে স্লাইড পরিবর্তন
-                    setInterval(nextSlide, 5000);
-                    
-                    // ডট ক্লিক ইভেন্ট
+                    // ডট আপডেট
                     const dots = document.querySelectorAll('.slider-dot');
                     dots.forEach((dot, i) => {
-                        dot.addEventListener('click', () => {
-                            goToSlide(i);
-                        });
+                        if (i === currentSlide) {
+                            dot.classList.add('active');
+                        } else {
+                            dot.classList.remove('active');
+                        }
                     });
-                })
-                .catch((error) => {
-                    console.error('স্লাইডার লোড করতে সমস্যা:', error);
-                    slider.innerHTML = '<div class="loading">স্লাইডার লোড করতে সমস্যা হয়েছে</div>';
+                }
+                
+                // ইভেন্ট লিসেনার যোগ করুন
+                nextSlide.addEventListener('click', nextSlide);
+                prevSlide.addEventListener('click', prevSlideFunc);
+                
+                // প্রতি 5 সেকেন্ডে স্লাইড পরিবর্তন
+                let slideInterval = setInterval(nextSlide, 5000);
+                
+                // যখন ইউজার ইন্টার্যাক্ট করে, ইন্টারভাল রিসেট করুন
+                slider.addEventListener('mouseenter', () => {
+                    clearInterval(slideInterval);
                 });
+                
+                slider.addEventListener('mouseleave', () => {
+                    slideInterval = setInterval(nextSlide, 5000);
+                });
+                
+            } catch (error) {
+                console.error('স্লাইডার লোড করতে সমস্যা:', error);
+                slider.innerHTML = '<div class="loading">স্লাইডার লোড করতে সমস্যা হয়েছে</div>';
+            }
+        }
+
+        // ইউজার ব্যালেন্স তৈরি বা আপডেট
+        async function createOrUpdateUserBalance() {
+            if (!user || !user.id) return;
+
+            const userId = user.id.toString();
+            const userBalanceRef = db.collection('userBalance').doc(userId);
+
+            try {
+                const doc = await userBalanceRef.get();
+                
+                if (!doc.exists) {
+                    // যদি ইউজারের ব্যালেন্স না থাকে, নতুন তৈরি করুন
+                    await userBalanceRef.set({
+                        mainBalance: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log('নতুন ইউজার ব্যালেন্স তৈরি করা হয়েছে');
+                } else {
+                    // ব্যালেন্স আপডেট করার সময়স্ট্যাম্প আপডেট করুন
+                    await userBalanceRef.update({
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error('ইউজার ব্যালেন্স তৈরি/আপডেট করতে সমস্যা:', error);
+            }
         }
 
         // ব্যালেন্স লোড
-        function loadBalance() {
+        async function loadBalance() {
             if (!user || !user.id) {
                 balanceAmount.textContent = '৳ 0.00';
                 return;
             }
             
-            // Firebase থেকে ইউজার ব্যালেন্স লোড
-            db.collection('userBalance').doc(user.id.toString())
-                .get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        const balance = data.mainBalance || 0;
-                        balanceAmount.textContent = `৳ ${balance.toLocaleString()}`;
-                    } else {
-                        balanceAmount.textContent = '৳ 0.00';
-                    }
-                })
-                .catch((error) => {
-                    console.error('ব্যালেন্স লোড করতে সমস্যা:', error);
+            try {
+                // প্রথমে ব্যালেন্স তৈরি বা আপডেট করুন
+                await createOrUpdateUserBalance();
+                
+                // তারপর ব্যালেন্স লোড করুন
+                const doc = await db.collection('userBalance').doc(user.id.toString()).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    const balance = data.mainBalance || 0;
+                    balanceAmount.textContent = `৳ ${balance.toLocaleString()}`;
+                } else {
                     balanceAmount.textContent = '৳ 0.00';
-                });
+                }
+            } catch (error) {
+                console.error('ব্যালেন্স লোড করতে সমস্যা:', error);
+                balanceAmount.textContent = '৳ 0.00';
+            }
         }
 
         // রেটিং ফ্রেম লোড
@@ -501,6 +703,20 @@
                     language_code: user.language_code
                 }));
                 ratingFrame.src = `rating.html?user=${userData}`;
+                
+                // ফ্রেম লোড হওয়ার পর উচ্চতা সেট করুন
+                ratingFrame.onload = function() {
+                    try {
+                        // ফ্রেমের কন্টেন্ট উচ্চতা অনুযায়ী ফ্রেমের উচ্চতা সেট করুন
+                        const frameDocument = ratingFrame.contentDocument || ratingFrame.contentWindow.document;
+                        const frameHeight = frameDocument.documentElement.scrollHeight;
+                        ratingFrame.style.height = frameHeight + 'px';
+                    } catch (e) {
+                        // Cross-origin এরর এড়ানোর জন্য
+                        console.log('ফ্রেম উচ্চতা সেট করতে সমস্যা (CORS)');
+                        ratingFrame.style.height = '600px'; // ডিফল্ট উচ্চতা
+                    }
+                };
             } else {
                 ratingFrame.src = 'rating.html';
             }
