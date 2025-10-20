@@ -446,19 +446,43 @@
     </header>
 
     <main class="container">
-        <!-- আপডেটেড স্লাইডার সেকশন -->
+        <!-- হার্ডকোডেড স্লাইডার সেকশন -->
         <section class="slider-section">
             <div class="slider-container">
                 <div class="slider-arrow prev" id="prev-slide">❮</div>
                 <div class="slider" id="slider">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <div>স্লাইডার লোড হচ্ছে...</div>
+                    <!-- হার্ডকোডেড স্লাইডার -->
+                    <div class="slide">
+                        <a href="#slide1" class="slide-link">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop" alt="Slide 1" class="slide-image">
+                            <div class="slide-overlay">
+                                <div class="slide-title">স্বাগতম স্লাইড ১</div>
+                                <div class="slide-description">এটি আমাদের প্রথম স্লাইড</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="slide">
+                        <a href="#slide2" class="slide-link">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop" alt="Slide 2" class="slide-image">
+                            <div class="slide-overlay">
+                                <div class="slide-title">স্বাগতম স্লাইড ২</div>
+                                <div class="slide-description">এটি আমাদের দ্বিতীয় স্লাইড</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="slide">
+                        <a href="#slide3" class="slide-link">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop" alt="Slide 3" class="slide-image">
+                            <div class="slide-overlay">
+                                <div class="slide-title">স্বাগতম স্লাইড ৩</div>
+                                <div class="slide-description">এটি আমাদের তৃতীয় স্লাইড</div>
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <div class="slider-arrow next" id="next-slide">❯</div>
                 <div class="slider-nav" id="slider-nav">
-                    <!-- স্লাইডার ডটস ডাইনামিকভাবে লোড হবে -->
+                    <!-- স্লাইডার ডটস ডাইনামিকভাবে তৈরি হবে -->
                 </div>
             </div>
         </section>
@@ -485,8 +509,8 @@
     </main>
 
     <script>
-        // Firebase কনফিগারেশন - আপনার প্রকৃত কনফিগারেশন ব্যবহার করুন
-        const firebaseConfig = {
+        // Firebase কনফিগারেশন - শুধুমাত্র ব্যালেন্সের জন্য
+       const firebaseConfig = {
   apiKey: "AIzaSyDan31qsrOecKIs6wLUjWfWafIzq8oXWpY",
   authDomain: "apelyfox-164c1.firebaseapp.com",
   databaseURL: "https://apelyfox-164c1-default-rtdb.firebaseio.com",
@@ -495,7 +519,6 @@
   messagingSenderId: "1081216277329",
   appId: "1:1081216277329:web:bfe0c3e9b4769d92e51170"
 };
-
         // Firebase ইনিশিয়ালাইজ
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -524,6 +547,28 @@
         let currentSlideIndex = 0;
         let slideInterval;
         let totalSlides = 0;
+
+        // হার্ডকোডেড স্লাইডার ডাটা
+        const hardcodedSlides = [
+            {
+                imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop",
+                targetLink: "#slide1",
+                title: "স্বাগতম স্লাইড ১",
+                description: "এটি আমাদের প্রথম স্লাইড"
+            },
+            {
+                imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop",
+                targetLink: "#slide2", 
+                title: "স্বাগতম স্লাইড ২",
+                description: "এটি আমাদের দ্বিতীয় স্লাইড"
+            },
+            {
+                imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop",
+                targetLink: "#slide3",
+                title: "স্বাগতম স্লাইড ৩",
+                description: "এটি আমাদের তৃতীয় স্লাইড"
+            }
+        ];
 
         // থিম টগল ফাংশন
         function toggleTheme() {
@@ -555,13 +600,14 @@
                 userName.textContent = fullName;
                 userId.textContent = `ID: ${id}`;
                 
-                // URL প্যারামিটার তৈরি
+                // URL প্যারামিটার তৈরি - Telegram ডাটা সহ
                 const userData = encodeURIComponent(JSON.stringify({
                     id: user.id,
                     first_name: user.first_name,
                     last_name: user.last_name,
                     username: user.username,
-                    language_code: user.language_code
+                    language_code: user.language_code,
+                    photo_url: user.photo_url
                 }));
                 
                 // লিঙ্কে Telegram ডাটা যোগ করা
@@ -573,157 +619,28 @@
             }
         }
 
-        // ডিফল্ট স্লাইডার ডাটা তৈরি
-        async function createDefaultSliderData() {
-            const defaultSlides = [
-                {
-                    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=350&fit=crop',
-                    targetLink: '#',
-                    title: 'স্বাগতম স্লাইড ১',
-                    description: 'এটি আমাদের ডিফল্ট স্লাইড',
-                    order: 1
-                },
-                {
-                    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=350&fit=crop',
-                    targetLink: '#',
-                    title: 'স্বাগতম স্লাইড ২',
-                    description: 'এটি আমাদের ডিফল্ট স্লাইড',
-                    order: 2
-                },
-                {
-                    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=350&fit=crop',
-                    targetLink: '#',
-                    title: 'স্বাগতম স্লাইড ৩',
-                    description: 'এটি আমাদের ডিফল্ট স্লাইড',
-                    order: 3
-                }
-            ];
-
-            try {
-                for (const slide of defaultSlides) {
-                    await db.collection('Admin').doc('homePage').collection('slider').add(slide);
-                }
-                console.log('ডিফল্ট স্লাইডার ডাটা তৈরি করা হয়েছে');
-                return true;
-            } catch (error) {
-                console.error('ডিফল্ট স্লাইডার তৈরি করতে সমস্যা:', error);
-                return false;
-            }
-        }
-
-        // স্লাইডার লোড এবং ডিসপ্লে
-        async function loadSlider() {
-            try {
-                console.log('স্লাইডার ডাটা লোড হচ্ছে...');
-                
-                const querySnapshot = await db.collection('Admin').doc('homePage').collection('slider')
-                    .orderBy('order')
-                    .get();
-                
-                if (querySnapshot.empty) {
-                    console.log('কোনো স্লাইড পাওয়া যায়নি, ডিফল্ট স্লাইড তৈরি হচ্ছে...');
-                    const created = await createDefaultSliderData();
-                    if (created) {
-                        // নতুন করে ডাটা লোড করুন
-                        await loadSlider();
-                    }
-                    return;
-                }
-                
-                console.log(`মোট ${querySnapshot.size}টি স্লাইড পাওয়া গেছে`);
-                
-                // স্লাইডার কন্টেন্ট ক্লিয়ার করুন
-                slider.innerHTML = '';
-                sliderNav.innerHTML = '';
-                
-                const slides = [];
-                let slideIndex = 0;
-                
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    console.log('স্লাইড ডাটা:', data);
-                    
-                    const slide = document.createElement('div');
-                    slide.className = 'slide';
-                    
-                    const link = document.createElement('a');
-                    link.href = data.targetLink || '#';
-                    link.target = '_blank';
-                    link.className = 'slide-link';
-                    
-                    const img = document.createElement('img');
-                    img.src = data.imageUrl || 'https://via.placeholder.com/800x350/cccccc/666666?text=No+Image';
-                    img.alt = data.title || 'Slide';
-                    img.className = 'slide-image';
-                    img.onerror = function() {
-                        console.log('ইমেজ লোড করতে সমস্যা:', this.src);
-                        this.src = 'https://via.placeholder.com/800x350/cccccc/666666?text=Image+Error';
-                    };
-                    
-                    link.appendChild(img);
-                    
-                    // ওভারলে যোগ করুন যদি টাইটেল বা ডেস্ক্রিপশন থাকে
-                    if (data.title || data.description) {
-                        const overlay = document.createElement('div');
-                        overlay.className = 'slide-overlay';
-                        
-                        if (data.title) {
-                            const title = document.createElement('div');
-                            title.className = 'slide-title';
-                            title.textContent = data.title;
-                            overlay.appendChild(title);
-                        }
-                        
-                        if (data.description) {
-                            const desc = document.createElement('div');
-                            desc.className = 'slide-description';
-                            desc.textContent = data.description;
-                            overlay.appendChild(desc);
-                        }
-                        
-                        link.appendChild(overlay);
-                    }
-                    
-                    slide.appendChild(link);
-                    slider.appendChild(slide);
-                    
-                    // স্লাইডার ডট তৈরি
-                    const dot = document.createElement('div');
-                    dot.className = 'slider-dot';
-                    dot.setAttribute('data-index', slideIndex);
-                    if (slideIndex === 0) {
-                        dot.classList.add('active');
-                    }
-                    dot.addEventListener('click', () => {
-                        goToSlide(slideIndex);
-                    });
-                    sliderNav.appendChild(dot);
-                    
-                    slides.push(slide);
-                    slideIndex++;
+        // হার্ডকোডেড স্লাইডার ইনিশিয়ালাইজ
+        function initHardcodedSlider() {
+            // স্লাইডার নেভিগেশন ডটস তৈরি করুন
+            sliderNav.innerHTML = '';
+            totalSlides = document.querySelectorAll('.slide').length;
+            
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'slider-dot';
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
                 });
-                
-                totalSlides = slides.length;
-                console.log(`মোট ${totalSlides}টি স্লাইড লোড করা হয়েছে`);
-                
-                if (totalSlides > 0) {
-                    // স্লাইডার ফাংশনালিটি ইনিশিয়ালাইজ করুন
-                    initSliderFunctionality();
-                } else {
-                    slider.innerHTML = '<div class="loading">কোনো স্লাইড পাওয়া যায়নি</div>';
-                }
-                
-            } catch (error) {
-                console.error('স্লাইডার লোড করতে সমস্যা:', error);
-                slider.innerHTML = '<div class="loading">স্লাইডার লোড করতে সমস্যা হয়েছে</div>';
+                sliderNav.appendChild(dot);
             }
+            
+            // স্লাইডার ফাংশনালিটি ইনিশিয়ালাইজ করুন
+            initSliderFunctionality();
         }
 
         // স্লাইডার ফাংশনালিটি ইনিশিয়ালাইজ
         function initSliderFunctionality() {
-            // বর্তমান স্লাইড ইনডেক্স রিসেট করুন
-            currentSlideIndex = 0;
-            
             // নেক্সট স্লাইড ফাংশন
             function nextSlide() {
                 currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
@@ -801,6 +718,18 @@
                 }
                 startAutoPlay();
             });
+
+            // স্লাইডার লিংক ক্লিক হ্যান্ডলার - # থাকলে রিডাইরেক্ট করবে না
+            document.querySelectorAll('.slide-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href');
+                    if (href === '#' || href.startsWith('#')) {
+                        e.preventDefault();
+                        // # লিংকের জন্য কোনো রিডাইরেক্ট নাই
+                        console.log('Internal slide link clicked:', href);
+                    }
+                });
+            });
         }
 
         // ইউজার ব্যালেন্স তৈরি বা আপডেট
@@ -854,7 +783,7 @@
             }
         }
 
-        // রেটিং ফ্রেম লোড
+        // রেটিং ফ্রেম লোড - Telegram ডাটা সহ
         function loadRatingFrame() {
             if (user) {
                 const userData = encodeURIComponent(JSON.stringify({
@@ -862,7 +791,8 @@
                     first_name: user.first_name,
                     last_name: user.last_name,
                     username: user.username,
-                    language_code: user.language_code
+                    language_code: user.language_code,
+                    photo_url: user.photo_url
                 }));
                 ratingFrame.src = `rating.html?user=${userData}`;
             } else {
@@ -885,8 +815,8 @@
             // ইউজার প্রোফাইল লোড
             loadUserProfile();
             
-            // স্লাইডার লোড
-            loadSlider();
+            // হার্ডকোডেড স্লাইডার ইনিশিয়ালাইজ
+            initHardcodedSlider();
             
             // ব্যালেন্স লোড
             loadBalance();
