@@ -132,7 +132,14 @@
             flex-shrink: 0;
         }
 
-        .slide img {
+        .slide-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+        }
+
+        .slide-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -250,6 +257,15 @@
             margin: 0 auto;
         }
 
+        /* সব ডিভাইসে পাশাপাশি গ্রিড রাখার জন্য ফোর্স করা */
+        .withdraw-btn, .all-wallet-link {
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
         .withdraw-btn {
             background-color: var(--primary-color);
             color: white;
@@ -261,10 +277,6 @@
             cursor: pointer;
             transition: background-color 0.3s;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
         }
 
         .withdraw-btn:hover {
@@ -275,15 +287,10 @@
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
             padding: 12px 20px;
             border: 1px solid var(--primary-color);
             border-radius: 8px;
             transition: all 0.3s;
-            text-align: center;
         }
 
         .all-wallet-link:hover {
@@ -340,8 +347,8 @@
             to { transform: rotate(360deg); }
         }
 
-        /* রেস্পন্সিভ ডিজাইন */
-        @media (max-width: 768px) {
+        /* রেস্পন্সিভ ডিজাইন - শুধুমাত্র খুব ছোট ডিভাইসের জন্য */
+        @media (max-width: 480px) {
             .header-content {
                 flex-direction: column;
                 gap: 15px;
@@ -356,9 +363,8 @@
             }
             
             .balance-actions {
-                grid-template-columns: 1fr;
                 gap: 12px;
-                max-width: 300px;
+                max-width: 100%;
             }
             
             .slider-arrow {
@@ -366,15 +372,24 @@
                 height: 35px;
                 font-size: 16px;
             }
+            
+            .withdraw-btn, .all-wallet-link {
+                padding: 10px 15px;
+                font-size: 14px;
+                min-height: 45px;
+            }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 320px) {
             .balance-actions {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr; /* সবসময় ২টা গ্রিড */
+                gap: 10px;
             }
             
-            .slider-section {
-                height: 200px;
+            .withdraw-btn, .all-wallet-link {
+                padding: 8px 12px;
+                font-size: 13px;
+                min-height: 40px;
             }
         }
     </style>
@@ -503,6 +518,9 @@
                 const id = user.id || 'N/A';
                 
                 profilePic.src = photoUrl;
+                profilePic.onerror = function() {
+                    this.src = 'https://via.placeholder.com/40/0088cc/ffffff?text=USER';
+                };
                 userName.textContent = fullName;
                 userId.textContent = `ID: ${id}`;
                 
@@ -528,21 +546,21 @@
         async function createDefaultSliderData() {
             const defaultSlides = [
                 {
-                    imageUrl: 'https://via.placeholder.com/800x350/0088cc/ffffff?text=স্বাগতম+স্লাইড+১',
+                    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=350&fit=crop',
                     targetLink: '#',
                     title: 'স্বাগতম স্লাইড ১',
                     description: 'এটি আমাদের ডিফল্ট স্লাইড',
                     order: 1
                 },
                 {
-                    imageUrl: 'https://via.placeholder.com/800x350/00cc88/ffffff?text=স্বাগতম+স্লাইড+২',
+                    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=350&fit=crop',
                     targetLink: '#',
                     title: 'স্বাগতম স্লাইড ২',
                     description: 'এটি আমাদের ডিফল্ট স্লাইড',
                     order: 2
                 },
                 {
-                    imageUrl: 'https://via.placeholder.com/800x350/cc0088/ffffff?text=স্বাগতম+স্লাইড+৩',
+                    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=350&fit=crop',
                     targetLink: '#',
                     title: 'স্বাগতম স্লাইড ৩',
                     description: 'এটি আমাদের ডিফল্ট স্লাইড',
@@ -600,11 +618,14 @@
                     const link = document.createElement('a');
                     link.href = data.targetLink || '#';
                     link.target = '_blank';
+                    link.className = 'slide-link';
                     
                     const img = document.createElement('img');
                     img.src = data.imageUrl || 'https://via.placeholder.com/800x350/cccccc/666666?text=No+Image';
                     img.alt = data.title || 'Slide';
+                    img.className = 'slide-image';
                     img.onerror = function() {
+                        console.log('ইমেজ লোড করতে সমস্যা:', this.src);
                         this.src = 'https://via.placeholder.com/800x350/cccccc/666666?text=Image+Error';
                     };
                     
@@ -692,7 +713,8 @@
             
             // স্লাইডার আপডেট ফাংশন
             function updateSlider() {
-                slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+                const translateX = -currentSlideIndex * 100;
+                slider.style.transform = `translateX(${translateX}%)`;
                 
                 // ডট আপডেট
                 const dots = document.querySelectorAll('.slider-dot');
@@ -710,39 +732,6 @@
             prevSlide.addEventListener('click', prevSlideFunc);
             
             // অটোপ্লে সেটআপ
-            startAutoPlay();
-            
-            // যখন ইউজার ইন্টার্যাক্ট করে, অটোপ্লে থামান এবং রিস্টার্ট করুন
-            slider.addEventListener('mouseenter', stopAutoPlay);
-            slider.addEventListener('mouseleave', startAutoPlay);
-            
-            // টাচ ইভেন্টস (মোবাইলের জন্য)
-            let startX = 0;
-            let endX = 0;
-            
-            slider.addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-                stopAutoPlay();
-            });
-            
-            slider.addEventListener('touchend', (e) => {
-                endX = e.changedTouches[0].clientX;
-                handleSwipe();
-                startAutoPlay();
-            });
-            
-            function handleSwipe() {
-                const diff = startX - endX;
-                if (Math.abs(diff) > 50) { // minimum swipe distance
-                    if (diff > 0) {
-                        nextSlide();
-                    } else {
-                        prevSlideFunc();
-                    }
-                }
-            }
-            
-            // অটোপ্লে কন্ট্রোল ফাংশন
             function startAutoPlay() {
                 stopAutoPlay();
                 slideInterval = setInterval(nextSlide, 5000);
@@ -753,6 +742,34 @@
                     clearInterval(slideInterval);
                 }
             }
+            
+            startAutoPlay();
+            
+            // যখন ইউজার ইন্টার্যাক্ট করে, অটোপ্লে থামান এবং রিস্টার্ট করুন
+            slider.addEventListener('mouseenter', stopAutoPlay);
+            slider.addEventListener('mouseleave', startAutoPlay);
+            
+            // টাচ ইভেন্টস (মোবাইলের জন্য)
+            let startX = 0;
+            
+            slider.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                stopAutoPlay();
+            });
+            
+            slider.addEventListener('touchend', (e) => {
+                const endX = e.changedTouches[0].clientX;
+                const diff = startX - endX;
+                
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlideFunc();
+                    }
+                }
+                startAutoPlay();
+            });
         }
 
         // ইউজার ব্যালেন্স তৈরি বা আপডেট
