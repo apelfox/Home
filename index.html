@@ -9,6 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #0088cc;
@@ -17,6 +19,7 @@
             --card-bg: #fff;
             --header-bg: #fff;
             --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #0088cc 0%, #00c2cc 100%);
         }
 
         [data-theme="dark"] {
@@ -26,6 +29,7 @@
             --card-bg: #333;
             --header-bg: #222;
             --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            --gradient: linear-gradient(135deg, #2a9fd6 0%, #2ad6d6 100%);
         }
 
         * {
@@ -39,6 +43,7 @@
             background-color: var(--secondary-color);
             color: var(--text-color);
             transition: all 0.3s ease;
+            line-height: 1.6;
         }
 
         .container {
@@ -75,6 +80,7 @@
             height: 40px;
             border-radius: 50%;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
 
         .user-avatar img {
@@ -145,24 +151,34 @@
             transform: translateX(26px);
         }
 
-        /* News Ticker */
+        /* Enhanced News Ticker */
         .news-ticker {
-            background-color: var(--primary-color);
+            background: var(--gradient);
             color: white;
-            padding: 10px 0;
+            padding: 12px 0;
             margin: 20px 0;
             overflow: hidden;
             position: relative;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
         }
 
         .ticker-container {
             display: flex;
-            animation: ticker 30s linear infinite;
+            animation: ticker 25s linear infinite;
         }
 
         .ticker-item {
             white-space: nowrap;
-            padding: 0 20px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .ticker-icon {
+            margin-right: 10px;
+            font-size: 16px;
         }
 
         @keyframes ticker {
@@ -172,6 +188,87 @@
             100% {
                 transform: translateX(-100%);
             }
+        }
+
+        /* Slider Section */
+        .slider-section {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .slider-container {
+            position: relative;
+            height: 180px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-1 {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+
+        .slide-2 {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+
+        .slide-3 {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1531299204812-e6d44d9a185c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+
+        .slide-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .slide-description {
+            font-size: 16px;
+            max-width: 80%;
+        }
+
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .dot.active {
+            background-color: var(--primary-color);
         }
 
         /* Balance Section */
@@ -186,12 +283,17 @@
             box-shadow: var(--shadow);
             text-align: center;
             margin-bottom: 20px;
+            border: 1px solid rgba(0, 136, 204, 0.1);
         }
 
         .balance-label {
             font-size: 18px;
             margin-bottom: 15px;
             color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .balance-amount {
@@ -199,6 +301,7 @@
             font-weight: bold;
             color: var(--primary-color);
             margin-bottom: 25px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .balance-buttons {
@@ -217,22 +320,26 @@
             text-decoration: none;
             display: inline-block;
             text-align: center;
+            font-size: 16px;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
+            box-shadow: 0 4px 6px rgba(0, 136, 204, 0.2);
         }
 
         .btn-secondary {
             background-color: var(--secondary-color);
             color: var(--text-color);
             border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         .btn:hover {
             opacity: 0.9;
             transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 136, 204, 0.3);
         }
 
         /* User Rating Section */
@@ -244,6 +351,10 @@
             margin-bottom: 20px;
             font-size: 24px;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .rating-frame {
@@ -293,7 +404,29 @@
             }
             
             .balance-buttons {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+                /* Ensuring buttons stay side by side on mobile */
+            }
+            
+            .slide-title {
+                font-size: 20px;
+            }
+            
+            .slide-description {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .balance-buttons {
+                grid-template-columns: 1fr 1fr;
+                /* Still side by side even on very small screens */
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 14px;
             }
         }
     </style>
@@ -323,38 +456,83 @@
         </div>
     </header>
 
-    <!-- News Ticker -->
-    <div class="news-ticker">
-        <div class="ticker-container">
-            <div class="ticker-item">Welcome to our platform! Enjoy the experience.</div>
-            <div class="ticker-item">New features coming soon. Stay tuned!</div>
-            <div class="ticker-item">Special promotion for new users. Don't miss out!</div>
-        </div>
-    </div>
-
     <div class="container">
+        <!-- News Ticker -->
+        <div class="news-ticker">
+            <div class="ticker-container">
+                <div class="ticker-item">
+                    <i class="fas fa-bullhorn ticker-icon"></i>
+                    Welcome to our platform! Enjoy the enhanced experience.
+                </div>
+                <div class="ticker-item">
+                    <i class="fas fa-gift ticker-icon"></i>
+                    Special promotion for new users. Don't miss out!
+                </div>
+                <div class="ticker-item">
+                    <i class="fas fa-star ticker-icon"></i>
+                    New features coming soon. Stay tuned for updates!
+                </div>
+                <div class="ticker-item">
+                    <i class="fas fa-chart-line ticker-icon"></i>
+                    Platform maintenance scheduled for next week.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Section -->
+        <section class="slider-section">
+            <div class="slider-container">
+                <div class="slide slide-1 active">
+                    <h2 class="slide-title">Welcome Bonus</h2>
+                    <p class="slide-description">Get started with a special welcome bonus for new users!</p>
+                </div>
+                <div class="slide slide-2">
+                    <h2 class="slide-title">Daily Rewards</h2>
+                    <p class="slide-description">Login daily to claim your rewards and increase your balance!</p>
+                </div>
+                <div class="slide slide-3">
+                    <h2 class="slide-title">Referral Program</h2>
+                    <p class="slide-description">Invite friends and earn extra credits for each successful referral!</p>
+                </div>
+            </div>
+            <div class="slider-dots">
+                <div class="dot active" data-slide="0"></div>
+                <div class="dot" data-slide="1"></div>
+                <div class="dot" data-slide="2"></div>
+            </div>
+        </section>
+
         <!-- Balance Section -->
         <section class="balance-section">
             <div class="balance-card">
-                <div class="balance-label">Main Balance</div>
+                <div class="balance-label">
+                    <i class="fas fa-wallet"></i>
+                    Main Balance
+                </div>
                 <div class="balance-amount" id="balance-amount">Loading...</div>
                 <div class="balance-buttons">
-                    <a href="#" class="btn btn-primary" id="withdraw-btn">Withdraw</a>
-                    <a href="#" class="btn btn-secondary" id="wallet-btn">All Wallet</a>
+                    <a href="#" class="btn btn-primary" id="withdraw-btn">
+                        <i class="fas fa-money-bill-wave"></i> Withdraw
+                    </a>
+                    <a href="#" class="btn btn-secondary" id="wallet-btn">
+                        <i class="fas fa-wallet"></i> All Wallet
+                    </a>
                 </div>
             </div>
         </section>
 
         <!-- User Rating Section -->
         <section class="rating-section">
-            <h2 class="section-title">User Rating</h2>
+            <h2 class="section-title">
+                <i class="fas fa-star"></i> User Rating
+            </h2>
             <iframe class="rating-frame" id="rating-frame" src=""></iframe>
         </section>
     </div>
 
     <script>
         // Firebase configuration
-const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyDan31qsrOecKIs6wLUjWfWafIzq8oXWpY",
   authDomain: "apelyfox-164c1.firebaseapp.com",
   databaseURL: "https://apelyfox-164c1-default-rtdb.firebaseio.com",
@@ -363,7 +541,6 @@ const firebaseConfig = {
   messagingSenderId: "1081216277329",
   appId: "1:1081216277329:web:bfe0c3e9b4769d92e51170"
 };
-
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -383,6 +560,35 @@ const firebaseConfig = {
         const walletBtn = document.getElementById('wallet-btn');
         const ratingFrame = document.getElementById('rating-frame');
         const themeToggle = document.getElementById('theme-toggle');
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        // Slider functionality
+        let currentSlide = 0;
+        const slideCount = slides.length;
+
+        function showSlide(n) {
+            // Hide all slides
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            dots.forEach(dot => {
+                dot.classList.remove('active');
+            });
+            
+            // Show the selected slide
+            slides[n].classList.add('active');
+            dots[n].classList.add('active');
+            currentSlide = n;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slideCount;
+            showSlide(currentSlide);
+        }
+
+        // Auto-advance slides every 5 seconds
+        let slideInterval = setInterval(nextSlide, 5000);
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -503,10 +709,30 @@ const firebaseConfig = {
             themeToggle.addEventListener('change', function() {
                 if (this.checked) {
                     document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
                 } else {
                     document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
                 }
             });
+
+            // Slider dots
+            dots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const slideIndex = parseInt(this.getAttribute('data-slide'));
+                    showSlide(slideIndex);
+                    // Reset the auto-advance timer
+                    clearInterval(slideInterval);
+                    slideInterval = setInterval(nextSlide, 5000);
+                });
+            });
+
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                themeToggle.checked = savedTheme === 'dark';
+            }
         }
     </script>
 </body>
